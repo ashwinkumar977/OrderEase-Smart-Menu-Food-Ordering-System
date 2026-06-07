@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ellora's Melting Moments Menu | OrderEase</title>
+<style>
+:root{
+  --primary:#2563eb;
+  --accent:#f97316;
+  --bg:#fdf6f0;
+  --card:#fff;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:sans-serif;background:var(--bg);}
+header{
+  background:var(--primary);color:#fff;padding:15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;
+}
+header h1{font-size:1.2rem;}
+.cart-btn{background:var(--accent);border:none;color:white;padding:8px 12px;border-radius:8px;cursor:pointer;}
+.container{max-width:900px;margin:20px auto;background:var(--card);border-radius:10px;padding:20px;}
+h2{color:var(--accent);margin:15px 0 8px 0;}
+.menu-list{list-style:none;}
+.menu-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed #ccc;}
+.add-btn{background:var(--primary);color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
+.add-btn:hover{background:#194fb7;}
+#cartModal,#trackingModal{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);justify-content:center;align-items:flex-start;padding-top:50px;z-index:1000;
+}
+#cartContent,#trackingContent{
+  background:white;width:400px;border-radius:10px;padding:15px;max-height:80vh;overflow:auto;
+}
+.cart-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #eee;}
+.qty-badge{background:#eef2ff;color:var(--primary);padding:2px 6px;border-radius:5px;}
+.remove-btn{background:#ef4444;color:white;border:none;padding:4px 6px;border-radius:5px;cursor:pointer;}
+.remove-btn:hover{background:#b91c1c;}
+.cart-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;}
+.checkout-btn{background:var(--accent);color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Ellora's Melting Moments</h1>
+<button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<div class="container">
+<h2>Cakes</h2>
+<ul class="menu-list" id="cakes-list">
+<li class="menu-item"><span>Chocolate Fudge Cake</span><span>₹450</span><button class="add-btn" onclick="addToCart('Chocolate Fudge Cake',450)">Add</button></li>
+<li class="menu-item"><span>Red Velvet Cake</span><span>₹500</span><button class="add-btn" onclick="addToCart('Red Velvet Cake',500)">Add</button></li>
+<li class="menu-item"><span>Black Forest Cake</span><span>₹480</span><button class="add-btn" onclick="addToCart('Black Forest Cake',480)">Add</button></li>
+<li class="menu-item"><span>Pineapple Cake</span><span>₹420</span><button class="add-btn" onclick="addToCart('Pineapple Cake',420)">Add</button></li>
+</ul>
+
+<h2>Pastries</h2>
+<ul class="menu-list" id="pastries-list">
+<li class="menu-item"><span>Chocolate Éclair</span><span>₹180</span><button class="add-btn" onclick="addToCart('Chocolate Éclair',180)">Add</button></li>
+<li class="menu-item"><span>Blueberry Tart</span><span>₹200</span><button class="add-btn" onclick="addToCart('Blueberry Tart',200)">Add</button></li>
+<li class="menu-item"><span>Strawberry Shortcake</span><span>₹190</span><button class="add-btn" onclick="addToCart('Strawberry Shortcake',190)">Add</button></li>
+<li class="menu-item"><span>Lemon Meringue</span><span>₹210</span><button class="add-btn" onclick="addToCart('Lemon Meringue',210)">Add</button></li>
+</ul>
+
+<h2>Shakes & Beverages</h2>
+<ul class="menu-list" id="beverages-list">
+<li class="menu-item"><span>Chocolate Shake</span><span>₹150</span><button class="add-btn" onclick="addToCart('Chocolate Shake',150)">Add</button></li>
+<li class="menu-item"><span>Vanilla Shake</span><span>₹150</span><button class="add-btn" onclick="addToCart('Vanilla Shake',150)">Add</button></li>
+<li class="menu-item"><span>Strawberry Shake</span><span>₹160</span><button class="add-btn" onclick="addToCart('Strawberry Shake',160)">Add</button></li>
+<li class="menu-item"><span>Cold Coffee</span><span>₹140</span><button class="add-btn" onclick="addToCart('Cold Coffee',140)">Add</button></li>
+<li class="menu-item"><span>Hot Chocolate</span><span>₹130</span><button class="add-btn" onclick="addToCart('Hot Chocolate',130)">Add</button></li>
+</ul>
+
+<h2>Cookies & Treats</h2>
+<ul class="menu-list" id="treats-list">
+<li class="menu-item"><span>Chocolate Chip Cookie</span><span>₹50</span><button class="add-btn" onclick="addToCart('Chocolate Chip Cookie',50)">Add</button></li>
+<li class="menu-item"><span>Oreo Cheesecake Bite</span><span>₹60</span><button class="add-btn" onclick="addToCart('Oreo Cheesecake Bite',60)">Add</button></li>
+<li class="menu-item"><span>Brownie</span><span>₹70</span><button class="add-btn" onclick="addToCart('Brownie',70)">Add</button></li>
+</ul>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" onclick="if(event.target===this) closeCart()">
+  <div id="cartContent">
+    <h3>Your Cart</h3>
+    <div id="cartList"></div>
+    <div class="cart-footer">
+      <strong>Total: ₹<span id="cartTotal">0</span></strong>
+      <button class="checkout-btn" onclick="checkout()">Place Order</button>
+    </div>
+    <div style="text-align:right;margin-top:8px">
+      <button class="add-btn" style="background:#6b7280" onclick="closeCart()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tracking Modal -->
+<div id="trackingModal" onclick="if(event.target===this) closeTracking()">
+  <div id="trackingContent">
+    <h3>Order Tracking</h3>
+    <iframe src="https://maps.google.com/maps?q=Dehradun&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+    <div style="text-align:right;margin-top:8px">
+      <button class="add-btn" style="background:#6b7280" onclick="closeTracking()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let cart=[];
+
+function addToCart(name,price){
+  const item=cart.find(i=>i.name===name);
+  if(item){ item.qty+=1; } else { cart.push({name,price,qty:1}); }
+  updateCart();
+}
+
+function updateCart(){
+  const cartList=document.getElementById('cartList');
+  cartList.innerHTML='';
+  let total=0;
+  cart.forEach((i,index)=>{
+    total+=i.price*i.qty;
+    const row=document.createElement('div');
+    row.className='cart-row';
+    row.innerHTML=`
+      <div>${i.name} <span class="qty-badge">${i.qty}</span></div>
+      <div>₹${i.price*i.qty} <button class="remove-btn" onclick="removeItem(${index})">x</button></div>
+    `;
+    cartList.appendChild(row);
+  });
+  document.getElementById('cartTotal').innerText=total;
+  document.getElementById('cartCount').innerText=cart.reduce((a,b)=>a+b.qty,0);
+}
+
+function removeItem(index){
+  cart.splice(index,1);
+  updateCart();
+}
+
+function clearCart(){
+  cart=[];
+  updateCart();
+}
+
+function openCart(){ document.getElementById('cartModal').style.display='flex'; }
+function closeCart(){ document.getElementById('cartModal').style.display='none'; }
+
+function checkout(){
+  if(cart.length===0){ alert('Cart is empty!'); return; }
+  alert('Payment Successful! Your order is confirmed.');
+  cart=[];
+  updateCart();
+  closeCart();
+  openTracking();
+}
+
+function openTracking(){ document.getElementById('trackingModal').style.display='flex'; }
+function closeTracking(){ document.getElementById('trackingModal').style.display='none'; }
+</script>
+
+</body>
+</html>

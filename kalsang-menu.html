@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Kalsang Café | OrderEase Demo</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+:root{
+--primary:#2563eb; --accent:#10b981; --bg:#f4f6f9; --card:#ffffff; --muted:#6b7280;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background:var(--bg); color:#111827;}
+header{background:var(--primary); color:white; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:1000; box-shadow:0 2px 6px rgba(0,0,0,0.08);}
+header h1{margin:0;font-size:1.25rem;letter-spacing:0.2px}
+.cart-btn{background:var(--accent); border:none; color:white; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:600; display:flex; gap:8px; align-items:center;}
+.container{max-width:1000px;margin:22px auto;background:var(--card);border-radius:12px;padding:26px;box-shadow:0 6px 18px rgba(15,23,42,0.06);}
+h2{ color:var(--accent); margin-top:18px; margin-bottom:8px; font-size:1.15rem; }
+.menu-list{ list-style:none; margin:0; padding:0; }
+.menu-item{ display:flex; gap:12px; align-items:center; padding:10px 8px; border-bottom:1px dashed #e6eef8; }
+.dish-name{ flex:1; font-weight:600; }
+.price{ width:85px; text-align:right; color:var(--primary); font-weight:700; }
+.add-btn{ background:var(--primary); border:none; color:white; padding:7px 10px; border-radius:8px; cursor:pointer; margin-left:12px; font-weight:600; }
+.add-btn:hover{ background:#194fb7; }
+
+/* Cart Modal */
+#cartModal, #paymentModal, #trackModal{ display:none; position:fixed; inset:0; background:rgba(2,6,23,0.45); justify-content:center; align-items:flex-start; padding-top:40px; z-index:2000; }
+#cartContent, #paymentContent, #trackContent{ background:var(--card); width:420px; border-radius:10px; padding:16px; box-shadow:0 10px 30px rgba(2,6,23,0.2); max-height:80vh; overflow:auto; }
+#cartContent h3, #paymentContent h3, #trackContent h3{ margin:0 0 10px 0; color:var(--primary) }
+.cart-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 6px; border-bottom:1px solid #f1f5f9; }
+.cart-left{ display:flex; gap:8px; align-items:center; }
+.qty-badge{ background:#eef2ff; color:var(--primary); padding:4px 8px; border-radius:6px; font-weight:700; }
+.remove-btn{ background:#ef4444; border:none; color:white; padding:6px 8px; border-radius:8px; cursor:pointer; }
+.remove-btn:hover{ background:#b91c1c; }
+.cart-footer{ padding-top:10px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.checkout-btn, .pay-btn, .track-btn{ background:var(--accent); border:none; color:white; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
+
+/* Responsive */
+@media (max-width:540px){ .price{ width:70px; font-size:0.95rem; } #cartContent, #paymentContent, #trackContent{ width:92%; } }
+
+#map{width:100%;height:300px;border-radius:12px;margin-top:10px;}
+.history-item{padding:8px;border-bottom:1px solid #f1f5f9;}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <strong>Kalsang Café — Dehradun</strong>
+    <div style="font-size:0.82rem;color:#e0f2f1;margin-top:2px">Authentic • Warm • Fresh</div>
+  </div>
+  <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<div class="container">
+
+<h2>Tibetan Starters</h2>
+<ul class="menu-list" id="tibetan-list">
+</ul>
+
+<h2>Main Course</h2>
+<ul class="menu-list" id="main-list">
+</ul>
+
+<h2>Tibetan Specials</h2>
+<ul class="menu-list" id="special-list">
+</ul>
+
+<h2>Desserts</h2>
+<ul class="menu-list" id="dessert-list">
+</ul>
+
+<h2>Beverages</h2>
+<ul class="menu-list" id="beverage-list">
+</ul>
+
+<h2>Past Orders</h2>
+<div id="orderHistory"></div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" onclick="if(event.target===this) closeCart()">
+  <div id="cartContent">
+    <h3>Your Cart</h3>
+    <div id="cartList"></div>
+    <div class="cart-footer">
+      <div><strong>Total: ₹<span id="cartTotal">0</span></strong></div>
+      <div style="display:flex;gap:8px">
+        <button class="checkout-btn" onclick="checkout()">Checkout</button>
+        <button class="remove-btn" onclick="clearCart()">Clear</button>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+    <div style="text-align:right;margin-top:8px"><button onclick="closeCart()" class="add-btn" style="background:#6b7280">Close</button></div>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" onclick="if(event.target===this) closePayment()">
+  <div id="paymentContent">
+    <h3>Payment</h3>
+    <div style="padding:12px;color:#6b7280" id="paymentSummary"></div>
+    <button class="pay-btn" onclick="payNow()">Pay Now</button>
+    <div style="height:8px"></div>
+    <div style="text-align:right;margin-top:8px"><button onclick="closePayment()" class="add-btn" style="background:#6b7280">Close</button></div>
+  </div>
+</div>
+
+<!-- Tracking Modal -->
+<div id="trackModal" onclick="if(event.target===this) closeTrack()">
+  <div id="trackContent">
+    <h3>Track Your Order</h3>
+    <div id="map"></div>
+    <button class="track-btn" onclick="closeTrack()">Close</button>
+  </div>
+</div>
+
+<script>
+// ----- DATA -----
+const menuItems = {
+  "tibetan-list":[
+    ["Veg Momos",120], ["Chicken Momos",140], ["Pork Momos",150], ["Paneer Momos",130],
+    ["Fried Momos",130], ["Steamed Momos",120], ["Cheese Momos",140], ["Thukpa Soup",110],
+    ["Veg Thukpa",120], ["Chicken Thukpa",140], ["Pork Thukpa",150], ["Veg Soup",90],
+    ["Chicken Soup",110], ["Pork Soup",120], ["Spring Rolls",100], ["Chili Paneer",150],
+    ["Szechuan Veg",140], ["Szechuan Chicken",160], ["Fried Wontons",130], ["Hot & Sour Soup",120]
+  ],
+  "main-list":[
+    ["Butter Chicken",360], ["Paneer Butter Masala",240], ["Chicken Curry",320], ["Paneer Curry",220],
+    ["Dal Makhani",180], ["Mixed Veg Curry",200], ["Chowmein Veg",140], ["Chowmein Chicken",160],
+    ["Fried Rice Veg",140], ["Fried Rice Chicken",160], ["Egg Curry",200], ["Prawn Curry",350],
+    ["Mutton Curry",380], ["Veg Pulao",150], ["Chicken Biryani",320], ["Mutton Biryani",380],
+    ["Egg Fried Rice",160], ["Veg Noodles",140], ["Chicken Noodles",160], ["Paneer Tikka Masala",250]
+  ],
+  "special-list":[
+    ["Tibetan Thenthuk",150], ["Tibetan Sha Phaley",180], ["Tibetan Tingmo",100],
+    ["Tibetan Gyuma",200], ["Tibetan Balep",140], ["Tibetan Sha Momo",180], ["Tibetan Ngompa",160],
+    ["Tibetan Churpee",120], ["Tibetan Chang",100], ["Tibetan Butter Tea",110], ["Tibetan Tingmo Set",200],
+    ["Tibetan Soup Set",180], ["Tibetan Stew Veg",150], ["Tibetan Stew Chicken",170], ["Tibetan Stew Pork",180],
+    ["Tibetan Chili Paneer",160], ["Tibetan Fried Rice Special",180], ["Tibetan Noodles Special",170], ["Tibetan Salad",120], ["Tibetan Sweet Rice",140]
+  ],
+  "dessert-list":[
+    ["Chocolate Brownie",140], ["Mango Milkshake",150], ["Gulab Jamun",100], ["Rasgulla",100],
+    ["Ice Cream Vanilla",120], ["Ice Cream Chocolate",130], ["Ice Cream Strawberry",130], ["Kheer",110],
+    ["Falooda",140], ["Tiramisu",180], ["Cheesecake",200], ["Brownie Sundae",160], ["Choco Lava Cake",180], ["Fruit Salad",120], ["Jalebi",100], ["Rabri",130], ["Carrot Halwa",120], ["Mocha Mousse",150], ["Cupcake",110], ["Donuts",100]
+  ],
+  "beverage-list":[
+    ["Masala Chai",50], ["Green Tea",60], ["Lemon Tea",50], ["Coffee",80],
+    ["Cold Coffee",100], ["Mango Juice",90], ["Orange Juice",80], ["Apple Juice",90],
+    ["Lassi Sweet",70], ["Lassi Salted",70], ["Buttermilk",60], ["Coke",50],
+    ["Sprite",50], ["Fanta",50], ["Mineral Water",30], ["Soda Water",40], ["Mocktail Mojito",120], ["Mocktail Sunrise",120], ["Energy Drink",150], ["Smoothie Banana",140]
+  ]
+};
+
+// ----- POPULATE MENU -----
+for(const cat in menuItems){
+  const ul = document.getElementById(cat);
+  menuItems[cat].forEach(it=>{
+    const li = document.createElement('li'); li.className='menu-item';
+    li.innerHTML=`<span class="dish-name">${it[0]}</span><span class="price">₹${it[1]}</span><button class="add-btn" onclick="addToCart('${it[0]}',${it[1]})">Add</button>`;
+    ul.appendChild(li);
+  });
+}
+
+// ----- CART SYSTEM -----
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+function addToCart(name, price){
+  const idx = cart.findIndex(i => i.name===name);
+  if(idx>-1) cart[idx].qty+=1;
+  else cart.push({name, price, qty:1});
+  saveCart();
+  updateCartUI();
+}
+function removeFromCart(index){ cart.splice(index,1); saveCart(); updateCartUI(); }
+function changeQty(index, delta){ cart[index].qty=Math.max(1,cart[index].qty+delta); saveCart(); updateCartUI(); }
+function clearCart(){ if(confirm('Remove all items from cart?')){ cart=[]; saveCart(); updateCartUI(); } }
+
+function saveCart(){ localStorage.setItem('cart', JSON.stringify(cart)); }
+
+function updateCartUI(){
+  const cartCountEl = document.getElementById('cartCount');
+  const cartList = document.getElementById('cartList');
+  const cartTotal = document.getElementById('cartTotal');
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  cartCountEl.innerText=count;
+  cartList.innerHTML='';
+  let total=0;
+  if(cart.length===0){ cartList.innerHTML='<div style="padding:12px;color:#6b7280">Your cart is empty.</div>'; }
+  else{
+    cart.forEach((it, idx)=>{
+      total+=it.price*it.qty;
+      const row = document.createElement('div'); row.className='cart-row';
+      row.innerHTML=`
+        <div class="cart-left">
+          <div style="min-width:160px">
+            <div style="font-weight:700">${escapeHtml(it.name)}</div>
+            <div style="font-size:0.9rem;color:${'#6b7280'}">₹${it.price} each</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="remove-btn" onclick="changeQty(${idx}, -1)" title="Decrease">-</button>
+          <div class="qty-badge">${it.qty}</div>
+          <button class="remove-btn" onclick="changeQty(${idx}, 1)" title="Increase">+</button>
+          <div style="width:10px"></div>
+          <div style="font-weight:700">₹${it.price*it.qty}</div>
+          <button class="remove-btn" style="margin-left:8px;background:#ef4444" onclick="removeFromCart(${idx})">Remove</button>
+        </div>`;
+      cartList.appendChild(row);
+    });
+  }
+  cartTotal.innerText=total;
+}
+
+function openCart(){ document.getElementById('cartModal').style.display='flex'; updateCartUI(); }
+function closeCart(){ document.getElementById('cartModal').style.display='none'; }
+
+function checkout(){
+  if(cart.length===0){ alert('Cart is empty'); return; }
+  let summary = '';
+  let total = 0;
+  cart.forEach(i=>{ summary+=`${i.name} x${i.qty} = ₹${i.price*i.qty}\n`; total+=i.price*i.qty; });
+  summary+=`\nTotal: ₹${total}`;
+  document.getElementById('paymentSummary').innerText = summary;
+  closeCart();
+  openPayment();
+}
+
+function openPayment(){ document.getElementById('paymentModal').style.display='flex'; }
+function closePayment(){ document.getElementById('paymentModal').style.display='none'; }
+
+function payNow(){
+  const orderId = 'ORD'+Math.floor(Math.random()*10000);
+  orders.push({id:orderId, items:cart, date:new Date().toLocaleString()});
+  localStorage.setItem('orders', JSON.stringify(orders));
+  cart=[]; saveCart(); updateCartUI(); closePayment();
+  alert('Payment Successful ✅\nOrder ID: '+orderId);
+  openTrack();
+  updateHistory();
+}
+
+// Fake Tracking Map
+let map, marker;
+function openTrack(){
+  document.getElementById('trackModal').style.display='flex';
+  initMap();
+}
+function closeTrack(){ document.getElementById('trackModal').style.display='none'; }
+function initMap(){
+  if(!map){
+    map = new google.maps.Map(document.getElementById('map'), {zoom:15, center:{lat:30.3165,lng:78.0322}});
+    marker = new google.maps.Marker({position:{lat:30.3165,lng:78.0322}, map:map, title:"Delivery Boy"});
+  }
+  const positions = [{lat:30.3165,lng:78.0322},{lat:30.3170,lng:78.0340},{lat:30.3180,lng:78.0360}];
+  let i=0;
+  setInterval(()=>{ i=(i+1)%positions.length; marker.setPosition(positions[i]); map.panTo(positions[i]); },3000);
+}
+
+// Order History
+function updateHistory(){
+  const hist = document.getElementById('orderHistory'); hist.innerHTML='';
+  orders.forEach(o=>{
+    let div = document.createElement('div'); div.className='history-item';
+    let names = o.items.map(it=>`${it.name} x${it.qty}`).join(', ');
+    div.innerHTML=`<strong>${o.id}</strong> - ${names} <br><span style="font-size:0.82rem;color:#6b7280">${o.date}</span>`;
+    hist.appendChild(div);
+  });
+}
+updateHistory();
+
+// escape HTML
+function escapeHtml(text){ return text.replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Orchard Restaurant Menu | OrderEase</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+:root{
+  --primary:#2563eb;
+  --accent:#10b981;
+  --bg:#f4f6f9;
+  --card:#ffffff;
+  --muted:#6b7280;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background:var(--bg);
+  color:#111827;
+  -webkit-font-smoothing:antialiased;
+}
+/* Header */
+header{
+  background:var(--primary);
+  color:white;
+  padding:12px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  box-shadow:0 2px 6px rgba(0,0,0,0.08);
+}
+header h1{margin:0;font-size:1.25rem;letter-spacing:0.2px}
+.cart-btn{
+  background:var(--accent);
+  border:none;
+  color:white;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+/* Container & sections */
+.container{
+  max-width:1000px;
+  margin:22px auto;
+  background:var(--card);
+  border-radius:12px;
+  padding:26px;
+  box-shadow:0 6px 18px rgba(15,23,42,0.06);
+}
+h2{ color:var(--accent); margin-top:18px; margin-bottom:8px; font-size:1.15rem; }
+.menu-list{ list-style:none; margin:0; padding:0; }
+/* each row */
+.menu-item{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:10px 8px;
+  border-bottom:1px dashed #e6eef8;
+}
+.dish-name{ flex:1; font-weight:600; }
+.dish-desc{ flex:1; color:var(--muted); font-weight:400; font-size:0.92rem; }
+.price{ width:85px; text-align:right; color:var(--primary); font-weight:700; }
+.add-btn{
+  background:var(--primary);
+  border:none;
+  color:white;
+  padding:7px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  margin-left:12px;
+  font-weight:600;
+}
+.add-btn:hover{ background:#194fb7; }
+/* Cart Modal */
+#cartModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,0.45);
+  justify-content:center;
+  align-items:flex-start;
+  padding-top:40px;
+  z-index:2000;
+}
+#cartContent{
+  background:var(--card);
+  width:420px;
+  border-radius:10px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(2,6,23,0.2);
+  max-height:80vh;
+  overflow:auto;
+}
+#cartContent h3{ margin:0 0 10px 0; color:var(--primary) }
+.cart-row{ display:flex; justify-content:space-between; align-items:center; padding:8px 6px; border-bottom:1px solid #f1f5f9; }
+.cart-left{ display:flex; gap:8px; align-items:center; }
+.qty-badge{ background:#eef2ff; color:var(--primary); padding:4px 8px; border-radius:6px; font-weight:700; }
+.remove-btn{ background:#ef4444; border:none; color:white; padding:6px 8px; border-radius:8px; cursor:pointer; }
+.remove-btn:hover{ background:#b91c1c; }
+.cart-footer{ padding-top:10px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.checkout-btn{ background:var(--accent); border:none; color:white; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700; }
+/* Responsive */
+@media (max-width:540px){
+  .price{ width:70px; font-size:0.95rem; }
+  #cartContent{ width:92%; }
+}
+#trackingModal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,0.45);
+  justify-content:center;
+  align-items:flex-start;
+  padding-top:40px;
+  z-index:2000;
+}
+#trackingContent{
+  background:var(--card);
+  width:420px;
+  border-radius:10px;
+  padding:16px;
+  box-shadow:0 10px 30px rgba(2,6,23,0.2);
+  max-height:80vh;
+  overflow:auto;
+}
+#trackingContent h3{ margin:0 0 10px 0; color:var(--primary) }
+#trackingContent iframe{
+  width:100%;
+  height:300px;
+  border-radius:10px;
+  border:none;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <strong>Orchard Restaurant — Dehradun</strong>
+    <div style="font-size:0.82rem;color:#e0f2f1;margin-top:2px">Fresh • Authentic • Delicious</div>
+  </div>
+  <button class="cart-btn" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<div class="container">
+
+  <h2>Starters</h2>
+  <ul class="menu-list" id="starters-list">
+    <li class="menu-item"><span class="dish-name">Paneer Tikka</span><span class="price">₹220</span><button class="add-btn" onclick="addToCart('Paneer Tikka',220)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Chicken Tikka</span><span class="price">₹250</span><button class="add-btn" onclick="addToCart('Chicken Tikka',250)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Fish Amritsari</span><span class="price">₹280</span><button class="add-btn" onclick="addToCart('Fish Amritsari',280)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Hara Bhara Kabab</span><span class="price">₹200</span><button class="add-btn" onclick="addToCart('Hara Bhara Kabab',200)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Chilli Chicken</span><span class="price">₹270</span><button class="add-btn" onclick="addToCart('Chilli Chicken',270)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Paneer 65</span><span class="price">₹230</span><button class="add-btn" onclick="addToCart('Paneer 65',230)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Veg Spring Rolls</span><span class="price">₹180</span><button class="add-btn" onclick="addToCart('Veg Spring Rolls',180)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Chicken Spring Rolls</span><span class="price">₹200</span><button class="add-btn" onclick="addToCart('Chicken Spring Rolls',200)">Add</button></li>
+  </ul>
+
+  <h2>Main Course</h2>
+  <ul class="menu-list" id="maincourse-list">
+    <li class="menu-item"><span class="dish-name">Butter Chicken</span><span class="price">₹360</span><button class="add-btn" onclick="addToCart('Butter Chicken',360)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Paneer Butter Masala</span><span class="price">₹240</span><button class="add-btn" onclick="addToCart('Paneer Butter Masala',240)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Dal Makhani</span><span class="price">₹220</span><button class="add-btn" onclick="addToCart('Dal Makhani',220)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Chicken Korma</span><span class="price">₹300</span><button class="add-btn" onclick="addToCart('Chicken Korma',300)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Mutton Rogan Josh</span><span class="price">₹380</span><button class="add-btn" onclick="addToCart('Mutton Rogan Josh',380)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Paneer Lababdar</span><span class="price">₹260</span><button class="add-btn" onclick="addToCart('Paneer Lababdar',260)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Veg Biryani</span><span class="price">₹200</span><button class="add-btn" onclick="addToCart('Veg Biryani',200)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Chicken Biryani</span><span class="price">₹320</span><button class="add-btn" onclick="addToCart('Chicken Biryani',320)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Egg Curry</span><span class="price">₹180</span><button class="add-btn" onclick="addToCart('Egg Curry',180)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Mushroom Masala</span><span class="price">₹220</span><button class="add-btn" onclick="addToCart('Mushroom Masala',220)">Add</button></li>
+  </ul>
+
+  <h2>Desserts</h2>
+  <ul class="menu-list" id="desserts-list">
+    <li class="menu-item"><span class="dish-name">Gulab Jamun (2 pcs)</span><span class="price">₹100</span><button class="add-btn" onclick="addToCart('Gulab Jamun (2 pcs)',100)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Rasmalai</span><span class="price">₹120</span><button class="add-btn" onclick="addToCart('Rasmalai',120)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Ice Cream Sundae</span><span class="price">₹150</span><button class="add-btn" onclick="addToCart('Ice Cream Sundae',150)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Chocolate Brownie</span><span class="price">₹140</span><button class="add-btn" onclick="addToCart('Chocolate Brownie',140)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Fruit Custard</span><span class="price">₹110</span><button class="add-btn" onclick="addToCart('Fruit Custard',110)">Add</button></li>
+  </ul>
+
+  <h2>Beverages</h2>
+  <ul class="menu-list" id="beverages-list">
+    <li class="menu-item"><span class="dish-name">Masala Chai</span><span class="price">₹60</span><button class="add-btn" onclick="addToCart('Masala Chai',60)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Cold Coffee</span><span class="price">₹120</span><button class="add-btn" onclick="addToCart('Cold Coffee',120)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Fresh Lime Soda</span><span class="price">₹80</span><button class="add-btn" onclick="addToCart('Fresh Lime Soda',80)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Mango Shake</span><span class="price">₹150</span><button class="add-btn" onclick="addToCart('Mango Shake',150)">Add</button></li>
+    <li class="menu-item"><span class="dish-name">Lemon Iced Tea</span><span class="price">₹90</span><button class="add-btn" onclick="addToCart('Lemon Iced Tea',90)">Add</button></li>
+  </ul>
+
+</div>
+
+<!-- Cart Modal -->
+<div id="cartModal" onclick="if(event.target===this) closeCart()">
+  <div id="cartContent">
+    <h3>Your Cart</h3>
+    <div id="cartList"></div>
+
+    <div class="cart-footer">
+      <div><strong>Total: ₹<span id="cartTotal">0</span></strong></div>
+      <div style="display:flex;gap:8px">
+        <button class="checkout-btn" onclick="checkout()">Place Order</button>
+        <button class="remove-btn" onclick="clearCart()">Clear</button>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+    <div style="text-align:right;margin-top:8px"><button onclick="closeCart()" class="add-btn" style="background:#6b7280">Close</button></div>
+  </div>
+</div>
+
+<!-- Tracking Modal -->
+<div id="trackingModal" onclick="if(event.target===this) closeTracking()">
+  <div id="trackingContent">
+    <h3>Order Tracking</h3>
+    <iframe src="https://maps.google.com/maps?q=Dehradun&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+    <div style="text-align:right;margin-top:8px"><button onclick="closeTracking()" class="add-btn" style="background:#6b7280">Close</button></div>
+  </div>
+</div>
+
+<script>
+let cart=[];
+function addToCart(name,price){
+  const item = cart.find(i=>i.name===name);
+  if(item){ item.qty+=1; } else{ cart.push({name,price,qty:1}); }
+  updateCart();
+}
+
+function updateCart(){
+  const cartList=document.getElementById('cartList');
+  cartList.innerHTML='';
+  let total=0;
+  cart.forEach((i,index)=>{
+    total+=i.price*i.qty;
+    const row=document.createElement('div');
+    row.className='cart-row';
+    row.innerHTML=`
+      <div class="cart-left"><span>${i.name}</span> <span class="qty-badge">${i.qty}</span></div>
+      <div>₹${i.price*i.qty} <button class="remove-btn" onclick="removeItem(${index})">x</button></div>
+    `;
+    cartList.appendChild(row);
+  });
+  document.getElementById('cartTotal').innerText=total;
+  document.getElementById('cartCount').innerText=cart.reduce((a,b)=>a+b.qty,0);
+}
+
+function removeItem(index){
+  cart.splice(index,1);
+  updateCart();
+}
+
+function clearCart(){
+  cart=[];
+  updateCart();
+}
+
+function openCart(){ document.getElementById('cartModal').style.display='flex'; }
+function closeCart(){ document.getElementById('cartModal').style.display='none'; }
+
+function checkout(){
+  if(cart.length===0){ alert('Cart is empty!'); return; }
+  alert('Payment Successful! Your order is confirmed.');
+  cart=[];
+  updateCart();
+  closeCart();
+  openTracking();
+}
+
+/* Tracking */
+function openTracking(){ document.getElementById('trackingModal').style.display='flex'; }
+function closeTracking(){ document.getElementById('trackingModal').style.display='none'; }
+
+</script>
+
+</body>
+</html>

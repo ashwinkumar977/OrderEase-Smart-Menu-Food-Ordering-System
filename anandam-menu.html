@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anandam — Full Menu</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+:root{
+--primary:#d97706; --accent:#16a34a; --bg:#fefaf3; --card:#fff; --muted:#6b7280; --danger:#ef4444;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:#111827;}
+header{background:var(--primary);color:white;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:1000;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+header h1{margin:0;font-size:1.5rem;}
+.cart-btn{background:var(--accent);border:none;color:white;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:600;display:flex;gap:8px;align-items:center;}
+
+.page{display:flex;justify-content:center;padding:30px;}
+.menu{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 8px 24px rgba(15,23,42,0.08);width:800px;max-height:80vh;overflow:auto;}
+.menu h2{color:var(--accent);margin-top:0;margin-bottom:15px;font-size:1.3rem;text-align:center;}
+.category-title{margin-top:20px;margin-bottom:10px;color:var(--primary);font-weight:700;font-size:1.1rem;border-bottom:2px solid var(--accent);}
+.menu-list{list-style:none;margin:0;padding:0;}
+.menu-item{display:flex;gap:12px;align-items:center;padding:12px 8px;border-bottom:1px dashed #e6eef8;}
+.dish-name{flex:1;font-weight:600;font-size:1rem;}
+.price{width:90px;text-align:right;color:var(--primary);font-weight:600;}
+.add-btn{background:var(--accent);border:none;color:white;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.9rem;}
+.cart-modal{position:fixed;top:0;right:0;width:400px;height:100%;background:white;box-shadow:-4px 0 20px rgba(0,0,0,0.2);padding:20px;transform:translateX(100%);transition:0.3s;overflow:auto;z-index:1001;}
+.cart-modal.open{transform:translateX(0);}
+.cart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+.cart-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px dashed #e6eef8;}
+.cart-item button{background:var(--danger);border:none;color:white;padding:3px 8px;border-radius:6px;cursor:pointer;font-size:0.85rem;}
+.cart-footer{margin-top:15px;}
+.checkout-btn{background:var(--primary);color:white;padding:10px 16px;border:none;border-radius:10px;width:100%;cursor:pointer;font-weight:600;}
+#map{height:280px;width:100%;margin-top:15px;border-radius:10px;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Anandam</h1>
+<button class="cart-btn" id="cartBtn"><i class="fa fa-shopping-cart"></i> Cart (<span id="cartCount">0</span>)</button>
+</header>
+
+<div class="page">
+<div class="menu" id="menuContainer">
+<h2>Menu</h2>
+<ul class="menu-list" id="menuList"></ul>
+</div>
+</div>
+
+<div class="cart-modal" id="cartModal">
+<div class="cart-header">
+<h3>Your Cart</h3>
+<button id="closeCart">X</button>
+</div>
+<div id="cartItems"></div>
+<div class="cart-footer">
+<p>Total: ₹<span id="cartTotal">0</span></p>
+<button class="checkout-btn" id="checkoutBtn">Checkout & Pay</button>
+<div id="map"></div>
+</div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// Anandam realistic menu
+const menuData=[
+{category:"Appetizers",name:"Hara Bhara Kebab",price:150},{category:"Appetizers",name:"Paneer Tikka",price:180},{category:"Appetizers",name:"Veg Spring Roll",price:140},{category:"Appetizers",name:"Chicken Malai Tikka",price:250},
+{category:"Soups & Salads",name:"Tomato Soup",price:100},{category:"Soups & Salads",name:"Minestrone Soup",price:120},{category:"Soups & Salads",name:"Greek Salad",price:180},{category:"Soups & Salads",name:"Caesar Salad",price:200},
+{category:"Main Course",name:"Butter Paneer Masala",price:220},{category:"Main Course",name:"Palak Paneer",price:210},{category:"Main Course",name:"Dal Tadka",price:180},{category:"Main Course",name:"Paneer Butter Masala",price:230},{category:"Main Course",name:"Veg Biryani",price:200},{category:"Main Course",name:"Chicken Biryani",price:280},{category:"Main Course",name:"Mutton Rogan Josh",price:350},{category:"Main Course",name:"Fish Curry",price:300},
+{category:"Desserts",name:"Gulab Jamun",price:90},{category:"Desserts",name:"Rasmalai",price:110},{category:"Desserts",name:"Chocolate Brownie",price:130},{category:"Desserts",name:"Ice Cream Sundae",price:150},{category:"Desserts",name:"Kheer",price:100},
+{category:"Beverages",name:"Masala Chai",price:40},{category:"Beverages",name:"Coffee",price:60},{category:"Beverages",name:"Lassi",price:80},{category:"Beverages",name:"Mango Shake",price:120},{category:"Beverages",name:"Soft Drinks",price:50}
+];
+// Expand to 120+ items automatically
+while(menuData.length<120){
+let i=menuData.length%25;
+menuData.push({...menuData[i],name:menuData[i].name+" "+(Math.floor(menuData.length/25)+1)});
+}
+
+// Render menu
+const menuList=document.getElementById("menuList");
+let currentCategory="";
+menuData.forEach((item,i)=>{
+if(item.category!==currentCategory){
+currentCategory=item.category;
+let catLi=document.createElement("li");
+catLi.className="category-title";
+catLi.textContent=currentCategory;
+menuList.appendChild(catLi);
+}
+let li=document.createElement("li");
+li.className="menu-item";
+li.innerHTML=`<span class="dish-name">${item.name}</span><span class="price">₹${item.price}</span><button class="add-btn" data-index="${i}">Add</button>`;
+menuList.appendChild(li);
+});
+
+// Cart logic
+let cart=[];
+const cartBtn=document.getElementById("cartBtn");
+const cartModal=document.getElementById("cartModal");
+const closeCart=document.getElementById("closeCart");
+const cartItemsDiv=document.getElementById("cartItems");
+const cartCount=document.getElementById("cartCount");
+const cartTotalSpan=document.getElementById("cartTotal");
+const checkoutBtn=document.getElementById("checkoutBtn");
+
+function updateCart(){
+cartItemsDiv.innerHTML="";
+let total=0;
+cart.forEach((item,i)=>{
+total+=item.price*item.qty;
+let div=document.createElement("div");
+div.className="cart-item";
+div.innerHTML=`<span>${item.name} x${item.qty}</span><span>₹${item.price*item.qty}</span><button data-index="${i}">Remove</button>`;
+cartItemsDiv.appendChild(div);
+div.querySelector("button").addEventListener("click",()=>{cart.splice(i,1);updateCart();});
+});
+cartCount.innerText=cart.reduce((a,b)=>a+b.qty,0);
+cartTotalSpan.innerText=total;
+}
+
+document.querySelectorAll(".add-btn").forEach(btn=>{
+btn.addEventListener("click",()=>{
+let idx=btn.dataset.index;
+let existing=cart.find(c=>c.name===menuData[idx].name);
+if(existing){existing.qty++;}else{cart.push({...menuData[idx],qty:1});}
+updateCart();
+});
+});
+
+cartBtn.addEventListener("click",()=>{cartModal.classList.add("open");});
+closeCart.addEventListener("click",()=>{cartModal.classList.remove("open");});
+
+// Fake checkout
+checkoutBtn.addEventListener("click",()=>{
+if(cart.length===0){alert("Cart is empty!");return;}
+alert("Payment successful! Order is being tracked.");
+cart=[];
+updateCart();
+initMap();
+});
+
+// Map simulation
+let map,marker;
+function initMap(){
+if(!map){
+map=L.map('map').setView([28.3949,77.0490],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+marker=L.marker([28.3949,77.0490]).addTo(map).bindPopup("Your Order is here!").openPopup();
+}else{marker.setLatLng([28.3949+Math.random()*0.01,77.0490+Math.random()*0.01]);map.setView(marker.getLatLng(),14);}
+}
+</script>
+
+</body>
+</html>

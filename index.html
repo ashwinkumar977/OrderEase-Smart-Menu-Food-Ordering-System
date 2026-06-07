@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrderEase - Dehradun's Smart Food Ordering System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --secondary-blue: #3b82f6;
+            --accent-green: #10b981;
+            --dark-green: #059669;
+            --white: #ffffff;
+            --light-bg: #f8fafc;
+            --dark-text: #1e293b;
+            --gray-text: #64748b;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --smooth-transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-text);
+            font-weight: 500;
+            transition: var(--smooth-transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-blue);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--smooth-transition);
+            border: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-green {
+            background: var(--accent-green);
+            color: var(--white);
+        }
+
+        .btn-green:hover {
+            background: var(--dark-green);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--white) 0%, #e0f2fe 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-heading {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--dark-text);
+            line-height: 1.2;
+        }
+
+        .hero-heading span {
+            color: var(--primary-blue);
+        }
+
+        .hero-subheading {
+            font-size: 1.2rem;
+            color: var(--gray-text);
+            margin-bottom: 30px;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* How It Works Section */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-heading {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            color: var(--dark-text);
+        }
+
+        .section-heading span {
+            color: var(--primary-blue);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .step-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: var(--smooth-transition);
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-icon {
+            background: var(--light-bg);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 30px;
+            color: var(--primary-blue);
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-text);
+        }
+
+        /* Features Section */
+        .features {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            transition: var(--smooth-transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            color: var(--accent-green);
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-text);
+        }
+
+        /* Popular Dishes */
+        .dishes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .dish-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--smooth-transition);
+        }
+
+        .dish-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .dish-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .dish-details {
+            padding: 20px;
+        }
+
+        .dish-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark-text);
+        }
+
+        .dish-desc {
+            color: var(--gray-text);
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .dish-price {
+            font-weight: 700;
+            color: var(--accent-green);
+            font-size: 1.2rem;
+        }
+
+        /* For Citizens and Vendors */
+        .audience {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+        }
+
+        .audience-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+
+        .audience-icon {
+            font-size: 50px;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        .audience-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark-text);
+        }
+
+        /* Contact Form */
+        .contact-form {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark-text);
+            color: var(--white);
+            padding: 60px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: var(--smooth-transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--white);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            color: var(--white);
+            font-size: 1.2rem;
+            transition: var(--smooth-transition);
+        }
+
+        .social-icons a:hover {
+            color: var(--accent-green);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--dark-text);
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero-heading {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .auth-buttons {
+                display: none;
+            }
+            
+            .hero-heading {
+                font-size: 2.3rem;
+            }
+            
+            .section-heading {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-utensils" style="color: var(--primary-blue); font-size: 28px;"></i>
+                <span class="logo-text">OrderEase</span>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#features">Features</a>
+                <a href="#dishes">Popular Dishes</a>
+                <a href="#citizens">For Citizens</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            
+            <div class="auth-buttons">
+                
+                <button class="btn btn-outline" onclick="window.location.href='login.html'">Login</button>
+                <button class="btn btn-primary" onclick="window.location.href='signup.html'">Sign Up</button>
+            </div>
+   
+    </header>
+    <!-- Hero Section -->
+    <section class="hero" style="padding:0; background: linear-gradient(120deg, #2563eb 0%, #10b981 100%); min-height: 520px; display: flex; align-items: center;">
+        <div class="container" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 60px 0;">
+            <div class="hero-text" style="flex:1; min-width:320px; color: #fff;">
+                <h1 class="hero-heading" style="font-size:3.2rem; font-weight:900; margin-bottom:18px; color:#fff; line-height:1.15;">
+                    <span style="color:#fff;">Order Food</span> <br>
+                    <span style="color:#ffe066;">From Dehradun's Best</span>
+                </h1>
+                <p class="hero-subheading" style="font-size:1.25rem; color:#e0e7ef; margin-bottom:32px; max-width:480px;">
+                    Discover, order, and enjoy delicious meals from top local restaurants. Fast, eco-friendly delivery. Experience the smart way to eat in Dehradun!
+                </p>
+                <div style="display:flex; gap:18px; flex-wrap:wrap;">
+                    <a href="#dishes" class="btn btn-green" style="font-size:1.1rem; padding:13px 36px; box-shadow:0 4px 16px rgba(16,185,129,0.15);">Order Now</a>
+                    <a href="#features" class="btn btn-outline" style="font-size:1.1rem; padding:13px 36px; border-color:#fff; color:#fff;">See Features</a>
+                </div>
+                <div style="margin-top:38px; display:flex; align-items:center; gap:18px;">
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <i class="fas fa-star" style="color:#ffe066;"></i>
+                        <i class="fas fa-star" style="color:#ffe066;"></i>
+                        <i class="fas fa-star" style="color:#ffe066;"></i>
+                        <i class="fas fa-star" style="color:#ffe066;"></i>
+                        <i class="fas fa-star-half-alt" style="color:#ffe066;"></i>
+                    </div>
+                    <span style="color:#ffe066; font-weight:600;">4.8/5</span>
+                    <span style="color:#e0e7ef;">(2,500+ happy customers)</span>
+                </div>
+            </div>
+            <div class="hero-image" style="flex:1; min-width:320px; display:flex; justify-content:center; align-items:center;">
+                <div style="position:relative; width:340px; height:380px; display:flex; align-items:center; justify-content:center;">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=700&q=80" alt="Paneer Tikka" style="width:320px; height:370px; object-fit:cover; border-radius:24px; box-shadow:0 8px 32px rgba(37,99,235,0.18); border:6px solid #fff;">
+                    <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=400&q=80" alt="Samosa" style="position:absolute; left:-60px; bottom:-30px; width:110px; height:110px; object-fit:cover; border-radius:18px; border:4px solid #fff; box-shadow:0 4px 16px rgba(16,185,129,0.15);">
+                    <img src="https://images.unsplash.com/photo-1627308595229-7830a5c91f9f?auto=format&fit=crop&w=600&q=80" alt="Dhokla" style="position:absolute; right:-50px; top:-30px; width:90px; height:90px; object-fit:cover; border-radius:18px; border:4px solid #fff; box-shadow:0 4px 16px rgba(59,130,246,0.12);">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="section" id="how-it-works">
+        <div class="container">
+            <h2 class="section-heading">How <span>OrderEase</span> Works</h2>
+            <div class="steps">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3 class="step-title">Choose Location</h3>
+                    <p>Select your delivery location in Dehradun to find restaurants near you.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="step-title">Select Food</h3>
+                    <p>Browse through hundreds of delicious dishes from local restaurants.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h3 class="step-title">Secure Payment</h3>
+                    <p>Pay easily with multiple secure payment options including UPI and card.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3 class="step-title">Fast Delivery</h3>
+                    <p>Get your food delivered quickly by our eco-friendly delivery partners.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section features" id="features">
+        <div class="container">
+            <h2 class="section-heading">Smart <span>Features</span></h2>
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="feature-title">Eco-Friendly Delivery</h3>
+                    <p>Our delivery partners use electric vehicles to reduce carbon emissions in Dehradun.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Instant Notifications</h3>
+                    <p>Get real-time updates about your order status and delivery progress.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Secure Payments</h3>
+                    <p>Your transactions are protected with advanced encryption technology.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Dishes Section -->
+    <section class="section" id="dishes">
+        <div class="container">
+            <h2 class="section-heading">Popular <span>Indian Dishes</span></h2>
+            <div class="dishes">
+                <div class="dish-card">
+                    <img src="butterchiken.jpg" alt="Butter Chicken" class="dish-image">
+                    <div class="dish-details">
+                        <h3 class="dish-title">Butter Chicken</h3>
+                        <p class="dish-desc">Tender chicken cooked in a rich, creamy tomato sauce with butter and spices.</p>
+                
+                    
+                    </div>
+                </div>
+                <div class="dish-card">
+                    <img src="MasalaDosa.jpg" alt="Masala Dosa" class="dish-image">
+                    <div class="dish-details">
+                        <h3 class="dish-title">Masala Dosa</h3>
+                        <p class="dish-desc">Crispy fermented crease filled with spiced potatoes, served with chutney.</p>
+                        
+                    </div>
+                </div>
+                <div class="dish-card">
+                     <img src="paneertikka.jpg" alt="Paneer Tikka" class="dish-image">
+                     <div class="dish-details">
+                     <h3 class="dish-title">Paneer Tikka</h3>
+                        <p class="dish-desc">Juicy paneer cubes grilled with peppers and onions, served with mint chutney.</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Restaurants Section -->
+<section class="section" id="restaurants">
+    <div class="container">
+        <h2 class="section-heading">Popular <span>Restaurants</span> in Dehradun</h2>
+        <div class="dishes">
+            <!-- Restaurant 1 -->
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80" alt="Kalsang Cafe" class="dish-image">
+                <div class="dish-details">
+                    
+                    <h3 class="dish-title">Kalsang Cafe</h3>
+                    <p class="dish-desc">Famous for Tibetan and Chinese cuisine in the heart of Dehradun.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Momos - ₹120</li>
+                        <li>Thukpa - ₹150</li>
+                        <li>Chilli Chicken - ₹220</li>
+                    </ul>
+                    <a href="kalsang-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Kalsang%20Cafe" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+            <!-- Restaurant 2 -->
+            <div class="dish-card">
+                <img src="town table.jpg" alt="Town Table" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Town Table</h3>
+                    <p class="dish-desc">Multi-cuisine restaurant known for its cozy ambience and variety.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Paneer Tikka - ₹210</li>
+                        <li>Butter Chicken - ₹285</li>
+                        <li>Veg Biryani - ₹180</li>
+                    </ul>
+                    <a href="towntable-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Kalsang%20Cafe" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+            <!-- Restaurant 3 -->
+            <div class="dish-card">
+                <img src="anandam.jpg" alt="Anandam" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Anandam</h3>
+                    <p class="dish-desc">Pure vegetarian restaurant serving North & South Indian delicacies.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Masala Dosa - ₹110</li>
+                        <li>Rajma Chawal - ₹130</li>
+                        <li>Dhokla - ₹90</li>
+                    </ul>
+                    <a href="anandam-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Anandam" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+            <!-- Restaurant 4 -->
+            <div class="dish-card">
+                <img src="punjab-grill.jpg" alt="Punjab Grill" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Punjab Grill</h3>
+                    <p class="dish-desc">Authentic Punjabi flavors with a modern twist.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Tandoori Chicken - ₹250</li>
+                        <li>Dal Makhani - ₹160</li>
+                        <li>Gulab Jamun - ₹80</li>
+                    </ul>
+                    <a href="punjabgrill-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Punjab%20Grill" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+            <!-- Restaurant 5 -->
+            <div class="dish-card">
+                <img src="black-pepper.jpg" alt="Black Pepper" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Black Pepper</h3>
+                    <p class="dish-desc">Popular for its multi-cuisine menu and elegant ambience.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Veg Manchurian - ₹160</li>
+                        <li>Chilli Paneer - ₹180</li>
+                        <li>Rasmalai - ₹110</li>
+                    </ul>
+                    <a href="blackpepper-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Black%20Pepper" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+             <!-- Restaurant 6 -->
+            <div class="dish-card">
+                <img src="orchid.jpg" alt="Orchard Restaurant" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Orchard Restaurant</h3>
+                    <p class="dish-desc">Scenic riverside spot serving Asian, Indian, and Continental cuisine.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Thai Curry - ₹260</li>
+                        <li>Veg Spring Rolls - ₹140</li>
+                        <li>Apple Pie - ₹120</li>
+                    </ul>
+                    <a href="orchard-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Orchard%20Restaurant" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+             <!-- Restaurant 7 -->
+            <div class="dish-card">
+                <img src="y-cafe-restaurant.jpg" alt="Y Cafe & Restaurant" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Y Cafe & Restaurant</h3>
+                    <p class="dish-desc">Retro-themed cafe famous for its breakfast and continental dishes.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>English Breakfast - ₹220</li>
+                        <li>Pasta Alfredo - ₹180</li>
+                        <li>Brownie Sundae - ₹130</li>
+                    </ul>
+                    <a href="ycafe-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Y%20Cafe%20%26%20Restaurant" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+             <!-- Restaurant 8 -->
+            <div class="dish-card">
+                <img src="usda.jpg" alt="Uss Da Dhaba" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Uss Da Dhaba</h3>
+                    <p class="dish-desc">Authentic Punjabi dhaba with rustic vibes and hearty meals.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Amritsari Kulcha - ₹90</li>
+                        <li>Dal Tadka - ₹110</li>
+                        <li>Lassi - ₹60</li>
+                    </ul>
+                    <a href="ussdadhaba-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Uss%20Da%20Dhaba" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+            <!-- Restaurant 9 -->
+            <div class="dish-card">
+                <img src="elloras.jpg" alt="Ellora's Melting Moments" class="dish-image">
+                <div class="dish-details">
+                    <h3 class="dish-title">Ellora's Melting Moments</h3>
+                    <p class="dish-desc">Iconic bakery and cafe, loved for its cakes, pastries, and snacks.</p>
+                    <ul style="padding-left:18px; margin-bottom:10px;">
+                        <li>Chocolate Truffle Cake - ₹150</li>
+                        <li>Pineapple Pastry - ₹60</li>
+                        <li>Veg Puff - ₹40</li>
+                    </ul>
+                    <a href="ellora-menu.html" class="btn btn-outline" style="padding:7px 18px;">View Menu</a>
+                    <a href="book-table.html?restaurant=Ellora%27s%20Melting%20Moments" class="btn btn-primary" style="margin-left:10px; padding:7px 18px;">Book a Table</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+  <!-- For Citizens Section -->
+<section class="section" id="citizens">
+    <div class="container">
+        <h2 class="section-heading">For <span>Citizens</span></h2>
+        <div class="audience">
+            <div class="audience-card">
+                <div class="audience-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 class="audience-title">Easy Ordering</h3>
+                <p>Browse menus, place orders, and track deliveries in real-time with our user-friendly app.</p>
+                <button class="btn btn-primary" style="margin-top: 20px;">Download App</button>
+            </div>
+            <div class="audience-card">
+                <div class="audience-icon">
+                    <i class="fas fa-percent"></i>
+                </div>
+                <h3 class="audience-title">Exclusive Deals</h3>
+                <p>Enjoy special discounts and offers available only to Dehradun residents through the app.</p>
+                <button class="btn btn-green" style="margin-top: 20px;" onclick="openOffers()">View Offers</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Offers Modal -->
+<div id="offersModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
+    <div style="background:#fff; padding:20px; border-radius:12px; max-width:400px; width:90%;">
+        <h3 style="color:#10b981; margin-top:0;">Exclusive Offers</h3>
+        <ul style="padding-left:20px; color:#111; margin-top:10px;">
+            <li>🎉 Flat 20% off on your first 3 orders.</li>
+            <li>🍔 Buy 1 Get 1 Free on selected dishes every Wednesday.</li>
+            <li>🚚 Free delivery on orders above ₹500.</li>
+            <li>💳 Extra cashback on payments via popular wallets.</li>
+            <li>🍕 Weekend special: Combo meals at discounted prices.</li>
+        </ul>
+        <button onclick="closeOffers()" style="margin-top:15px; background:#2563eb; color:#fff; padding:8px 14px; border:none; border-radius:8px; cursor:pointer;">Close</button>
+    </div>
+</div>
+
+<script>
+    function openOffers(){
+        document.getElementById('offersModal').style.display = 'flex';
+    }
+    function closeOffers(){
+        document.getElementById('offersModal').style.display = 'none';
+    }
+</script>
+
+
+      <!-- Contact Section -->
+    <section class="section" id="contact">
+        <div class="container">
+            <h2 class="section-heading">Contact <span>Us</span></h2>
+            <div class="contact-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" rows="5" placeholder="Type your message here"></textarea>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;">Send Message</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>OrderEase</h3>
+                    <p>Dehradun's premier food ordering platform, making city life smarter and more convenient.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="careers.html">Careers</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> Opposite Uttaranchal University, Dehradun, India</li>
+                        <li><i class="fas fa-phone"></i> +91 6201353335</li>
+                        <li><i class="fas fa-envelope"></i> work.abhishek06@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 OrderEase. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple JavaScript for interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navLinks = document.querySelector('.nav-links');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            
+            // Login/Signup functionality would go here
+            const loginBtn = document.querySelector('.auth-buttons .btn-outline');
+            const signupBtn = document.querySelector('.auth-buttons .btn-primary');
+        });
+    </script>
+    <script>
+let cart = [];
+function updateCartCount() {
+    document.getElementById('cart-count').textContent = cart.length;
+}
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const name = this.getAttribute('data-name');
+            const price = this.getAttribute('data-price');
+            cart.push({ name, price });
+            updateCartCount();
+            alert(name + " added to cart!");
+        });
+    });
+    document.getElementById('cart-btn').addEventListener('click', function() {
+        if (cart.length === 0) {
+            alert("Your cart is empty!");
+        } else {
+            let msg = "Your Cart:\n";
+            cart.forEach(item => {
+                msg += `${item.name} - ₹${item.price}\n`;
+            });
+            alert(msg);
+        }
+    });
+});
+</script>
+</body>
+</html>
